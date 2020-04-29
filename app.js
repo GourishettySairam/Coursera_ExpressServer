@@ -16,10 +16,12 @@ var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var uploadRouter = require('./routes/uploadRouter');
+var favoriteRouter = require('./routes/favoriteRouter')
 
 const mongoose = require('mongoose');
 const url = config.mongoUrl;
 const Dishes = require('./models/dishes');
+const Favorites = require('./models/favorites')
 
 var app = express();
 app.all('*', (req,res,next) =>{
@@ -43,6 +45,7 @@ app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/favorites',favoriteRouter);
 
 
 

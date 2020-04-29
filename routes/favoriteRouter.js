@@ -18,7 +18,6 @@ favoriteRouter.route('/')
     .populate('user')
     .populate('dishes')
     .then((favorites) => {
-        console.log(favorites)
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(favorites);

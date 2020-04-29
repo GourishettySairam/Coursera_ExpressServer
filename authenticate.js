@@ -8,10 +8,10 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 var config = require('./config');
 
-var GoogleStrategy = require('passport-google-oauth2').Strategy;
-//exports.google = passport.use(new GoogleStrategy(User.authenticate()));
+var FacebookTokenStrategy = require('passport-facebook-token');
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -54,15 +54,13 @@ exports.verifyAdmin = (req,res,next) =>
   }
 }
 
-exports.googlePassport = passport.use(new GoogleStrategy({
-    clientID:     config.google.clientId,
-    clientSecret: config.google.clientSecret,
-    callbackURL: "https://localhost:3443/index.html",
-    passReqToCallback   : true
-  },
-  function(request, accessToken, refreshToken, profile, done) {
-    User.findOne({ googleId: profile.id }, function (err, user) {
-      if (err) {
+
+exports.facebookPassport = passport.use(new FacebookTokenStrategy({
+        clientID: config.facebook.clientId,
+        clientSecret: config.facebook.clientSecret
+    }, (accessToken, refreshToken, profile, done) => {
+        User.findOne({facebookId: profile.id}, (err, user) => {
+            if (err) {
                 return done(err, false);
             }
             if (!err && user !== null) {
@@ -70,7 +68,7 @@ exports.googlePassport = passport.use(new GoogleStrategy({
             }
             else {
                 user = new User({ username: profile.displayName });
-                user.googleId = profile.id;
+                user.facebookId = profile.id;
                 user.firstname = profile.name.givenName;
                 user.lastname = profile.name.familyName;
                 user.save((err, user) => {
@@ -80,6 +78,6 @@ exports.googlePassport = passport.use(new GoogleStrategy({
                         return done(null, user);
                 })
             }
-    });
-  }
+        });
+    }
 ));
